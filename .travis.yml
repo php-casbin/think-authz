@@ -1,0 +1,26 @@
+language: php
+
+sudo: false
+
+php: 
+  - 7.1
+  - 7.2
+  - 7.3
+    
+services:
+  - mysql
+
+before_install:  
+  - travis_retry composer self-update
+  - mysql -e 'create database if not exists tauthz;'
+
+install:
+  - travis_retry composer install --prefer-dist --dev --no-suggest --no-interaction
+
+script:
+ - vendor/bin/phpunit --version
+ - mkdir -p build/logs
+ - vendor/bin/phpunit
+
+after_script:
+ - travis_retry vendor/bin/php-coveralls -v
