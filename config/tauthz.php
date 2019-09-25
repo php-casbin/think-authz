@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
      *Default Tauthz enforcer
@@ -8,8 +9,8 @@ return [
     'log' => [
         // changes whether Lauthz will log messages to the Logger.
         'enabled' => false,
-        // Casbin Logger
-        'logger' => tauthz\Logger::class,
+        // Casbin Logger, Supported: \Psr\Log\LoggerInterface|string
+        'logger' => 'log',
     ],
 
     'enforcers' => [
