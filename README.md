@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-	<strong>Think-authz 是一个专为ThinkPHP6.0打造的授权（角色和权限控制）工具</strong>    
+	<strong>Think-authz 是一个专为 ThinkPHP6.0 打造的授权（角色和权限控制）工具</strong>    
 </p>
 
 <p align="center">
@@ -32,11 +32,7 @@
 * [用法](#用法)
   * [快速开始](#快速开始)
   * [使用 Enforcer Api](#使用-enforcer-api)
-  * [Using a middleware](#using-a-middleware)
-    * [basic Enforcer Middleware](#basic-enforcer-middleware)
-    * [HTTP Request Middleware ( RESTful is also supported )](#http-request-middleware--restful-is-also-supported-)
-  * [Using commands](#using-commands)
-  * [Cache](#using-cache)
+  * [使用中间件](#使用中间件)
 * [感谢](#thinks)
 * [License](#license)
 
@@ -67,7 +63,7 @@ php think tauthz:publish
 这将自动生成 `config/tauthz-rbac-model.conf` 和 `config/tauthz.php` 文件。
 
 
-执行迁移工具（确保数据库配置信息正确）：
+执行迁移工具（**确保数据库配置信息正确**）：
 
 ```
 php think migrate:run
@@ -95,7 +91,7 @@ Enforcer::addPolicy('writer', 'articles','edit');
 
 ```
 
-You can check if a user has a permission like this:
+你可以检查一个用户是否拥有某个权限:
 
 ```php
 // to check if a user has permission
@@ -109,45 +105,45 @@ if (Enforcer::enforce("eve", "articles", "edit")) {
 
 ### 使用 Enforcer Api
 
-It provides a very rich api to facilitate various operations on the Policy:
+它提供了非常丰富的 `API`，以促进对 `Policy` 的各种操作：
 
-Gets all roles:
+获取所有角色:
 
 ```php
 Enforcer::getAllRoles(); // ['writer', 'reader']
 ```
 
-Gets all the authorization rules in the policy.:
+获取所有的角色的授权规则：
 
 ```php
 Enforcer::getPolicy();
 ```
 
-Gets the roles that a user has.
+获取某个用户的所有角色：
 
 ```php
 Enforcer::getRolesForUser('eve'); // ['writer']
 ```
 
-Gets the users that has a role.
+获取某个角色的所有用户：
 
 ```php
 Enforcer::getUsersForRole('writer'); // ['eve']
 ```
 
-Determines whether a user has a role.
+决定用户是否拥有某个角色：
 
 ```php
 Enforcer::hasRoleForUser('eve', 'writer'); // true or false
 ```
 
-Adds a role for a user.
+给用户添加角色：
 
 ```php
 Enforcer::addRoleForUser('eve', 'writer');
 ```
 
-Adds a permission for a user or role.
+赋予权限给某个用户或角色：
 
 ```php
 // to user
@@ -156,37 +152,37 @@ Enforcer::addPermissionForUser('eve', 'articles', 'read');
 Enforcer::addPermissionForUser('writer', 'articles','edit');
 ```
 
-Deletes a role for a user.
+删除用户的角色：
 
 ```php
 Enforcer::deleteRoleForUser('eve', 'writer');
 ```
 
-Deletes all roles for a user.
+删除某个用户的所有角色：
 
 ```php
 Enforcer::deleteRolesForUser('eve');
 ```
 
-Deletes a role.
+删除单个角色：
 
 ```php
 Enforcer::deleteRole('writer');
 ```
 
-Deletes a permission.
+删除某个权限：
 
 ```php
 Enforcer::deletePermission('articles', 'read'); // returns false if the permission does not exist (aka not affected).
 ```
 
-Deletes a permission for a user or role.
+删除某个用户或角色的权限：
 
 ```php
 Enforcer::deletePermissionForUser('eve', 'articles', 'read');
 ```
 
-Deletes permissions for a user or role.
+删除某个用户或角色的所有权限：
 
 ```php
 // to user
@@ -195,43 +191,46 @@ Enforcer::deletePermissionsForUser('eve');
 Enforcer::deletePermissionsForUser('writer');
 ```
 
-Gets permissions for a user or role.
+获取用户或角色的所有权限：
 
 ```php
 Enforcer::getPermissionsForUser('eve'); // return array
 ```
 
-Determines whether a user has a permission.
+决定某个用户是否拥有某个权限
 
 ```php
 Enforcer::hasPermissionForUser('eve', 'articles', 'read');  // true or false
 ```
 
-### Using a middleware
+更多 `API` 参考 [Casbin API](https://casbin.org/docs/en/management-api) 。
 
-敬请期待...
-
-#### basic Enforcer Middleware
+### 使用中间件
 
 
+该扩展包带有一个 `Basic` 中间件。 您可以将它们添加到您的`app/middleware.php`文件中:
 
-#### HTTP Request Middleware ( RESTful is also supported )
+```php
+<?php
 
-
+return [
+    // ... 其他中间件
+    'alias' => [
+        'authz'  => \tauthz\middleware\Basic::class,
+    ],
+];
 ```
+
+然后就可以使用它们来保护路由了：
+
+```php
+Route::get('news/:id','News/Show')
+	->middleware('authz', ['news', 'read']);
 ```
-
-### Using artisan commands
-
-敬请期待...
-
-### Using cache
-
-敬请期待...
 
 ## 感谢
 
-[Casbin](https://github.com/php-casbin/php-casbin) . You can find the full documentation of Casbin [on the website](https://casbin.org/).
+[Casbin](https://github.com/php-casbin/php-casbin)，你可以查看全部文档在其 [官网](https://casbin.org/) 上。
 
 ## License
 
