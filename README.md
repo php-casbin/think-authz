@@ -24,9 +24,9 @@
   	</a>
 </p>
 
-它基于 [Casbin](https://github.com/php-casbin/php-casbin), 一个强大的、高效的开源访问控制框架，它支持基于各种访问控制模型的权限管理。
+它基于 [PHP-Casbin](https://github.com/php-casbin/php-casbin), 一个强大的、高效的开源访问控制框架，支持基于`ACL`, `RBAC`, `ABAC`等访问控制模型。
 
-在这之前，你需要了解 `Casbin` 的相关知识.
+在这之前，你需要了解 [Casbin](https://github.com/php-casbin/php-casbin) 的相关知识。
 
 * [安装](#安装)
 * [用法](#用法)
@@ -38,13 +38,15 @@
 
 ## 安装
 
+> 该扩展需要 PHP 7.1+ 和 ThinkPHP 6.0+，针对 TP 5.1 请使用 [Think-Casbin](https://github.com/php-casbin/think-casbin) .
+
 使用`composer`安装：
 
 ```
 composer require casbin/think-authz
 ```
 
-注册服务，在应用的全局公共文件service.php中加入：
+注册服务，在应用的全局公共文件`service.php`中加入：
 
 ```php
 return [
