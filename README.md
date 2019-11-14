@@ -71,7 +71,7 @@ php think tauthz:publish
 php think migrate:run
 ```
 
-这将创将创建名为 `rules` 的表。
+这将创建名为 `rules` 的表。
 
 
 ## 用法
