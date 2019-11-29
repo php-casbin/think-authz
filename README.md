@@ -210,24 +210,11 @@ Enforcer::hasPermissionForUser('eve', 'articles', 'read');  // true or false
 ### 使用中间件
 
 
-该扩展包带有一个 `Basic` 中间件。 您可以将它们添加到您的`app/middleware.php`文件中:
-
-```php
-<?php
-
-return [
-    // ... 其他中间件
-    'alias' => [
-        'authz'  => \tauthz\middleware\Basic::class,
-    ],
-];
-```
-
-然后就可以使用它们来保护路由了：
+该扩展包带有一个 `\tauthz\middleware\Basic::class` 中间件:
 
 ```php
 Route::get('news/:id','News/Show')
-	->middleware('authz', ['news', 'read']);
+	->middleware(\tauthz\middleware\Basic::class, ['news', 'read']);
 ```
 
 ## 感谢

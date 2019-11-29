@@ -3,6 +3,7 @@
 namespace tauthz\middleware;
 
 use tauthz\exception\Unauthorized;
+use tauthz\facade\Enforcer;
 use think\Request;
 
 class Basic
@@ -19,7 +20,7 @@ class Basic
     public function handle(Request $request, \Closure $next, $args)
     {
         $authzIdentifier = $this->getAuthzIdentifier($request);
-        if (!$request) {
+        if (!$authzIdentifier) {
             throw new Unauthorized();
         }
 
