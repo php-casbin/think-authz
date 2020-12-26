@@ -21,7 +21,7 @@ return [
             'model' => [
                 // 可选值: "file", "text"
                 'config_type' => 'file',
-                'config_file_path' => config_path().'tauthz-rbac-model.conf',
+                'config_file_path' => config_path() . 'tauthz-rbac-model.conf',
                 'config_text' => '',
             ],
 
@@ -38,6 +38,8 @@ return [
                 'rules_name' => 'rules',
                 // 策略表完整名称.
                 'rules_table' => null,
+                // 指定缓存标识
+                'cahce_key' => 'tauthz',
             ],
         ],
     ],
