@@ -6,6 +6,7 @@ php:
   - 7.1
   - 7.2
   - 7.3
+  - 7.4
     
 services:
   - mysql
@@ -16,6 +17,9 @@ before_install:
 
 install:
   - travis_retry composer install --prefer-dist --dev --no-suggest --no-interaction
+
+before_script:
+  - export XDEBUG_MODE=coverage
 
 script:
  - vendor/bin/phpunit --version

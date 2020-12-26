@@ -2,28 +2,31 @@
 
 namespace tauthz\tests;
 
+use Closure;
 use think\App;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use tauthz\TauthzService;
 use tauthz\model\Rule;
 
-class TestCase extends BaseTestCase{
+class TestCase extends BaseTestCase
+{
 
     protected $app;
 
     protected $migrate = true;
 
-    public function createApplication(){
+    public function createApplication()
+    {
 
         // 应用初始化
-        $app = new App(__DIR__.'/../vendor/topthink/think/');        
+        $app = new App(__DIR__ . '/../vendor/topthink/think/');
 
         $app->register(TauthzService::class);
 
         $app->initialize();
 
         $app->console->call("tauthz:publish");
-        
+
         return $app;
     }
 
@@ -52,12 +55,21 @@ class TestCase extends BaseTestCase{
         $this->app = $this->createApplication();
     }
 
+    protected function testing(Closure $closure)
+    {
+        $this->_setUp();
+
+        $closure();
+
+        $this->_tearDown();
+    }
+
     /**
      * This method is called before each test.
      */
-    protected function setUp()/* The :void return type declaration that should be here would cause a BC issue */
+    protected function _setUp()
     {
-        if (! $this->app) {
+        if (!$this->app) {
             $this->refreshApplication();
         }
 
@@ -69,9 +81,9 @@ class TestCase extends BaseTestCase{
     /**
      * This method is called after each test.
      */
-    protected function tearDown()/* The :void return type declaration that should be here would cause a BC issue */
+    protected function _tearDown()
     {
-        if ($this->migrate){
+        if ($this->migrate) {
             $this->app->console->call("migrate:rollback");
         }
     }
