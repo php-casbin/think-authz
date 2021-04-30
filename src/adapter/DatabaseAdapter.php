@@ -47,7 +47,7 @@ class DatabaseAdapter implements Adapter
         foreach ($rule as $key => $value) {
             $col['v'.strval($key).''] = $value;
         }
-        $this->model->cache('tauthz')->save($col);
+        $this->model->cache($this->model->getConnection().$this->model->getTable())->save($col);
     }
 
     /**
@@ -57,7 +57,7 @@ class DatabaseAdapter implements Adapter
      */
     public function loadPolicy(Model $model): void
     {
-        $rows = $this->model->cache('tauthz')->select()->toArray();
+        $rows = $this->model->cache($this->model->getConnection().$this->model->getTable())->select()->toArray();
         foreach ($rows as $row) {
             $line = implode(', ', array_filter(array_slice($row, 1), function ($val) {
                 return '' != $val && !is_null($val);
@@ -117,7 +117,7 @@ class DatabaseAdapter implements Adapter
         }
 
         foreach ($instance->select() as $model) {
-            if ($model->cache('tauthz')->delete()) {
+            if ($model->cache($this->model->getConnection().$this->model->getTable())->delete()) {
                 ++$count;
             }
         }
@@ -146,7 +146,7 @@ class DatabaseAdapter implements Adapter
         }
 
         foreach ($instance->select() as $model) {
-            if ($model->cache('tauthz')->delete()) {
+            if ($model->cache($this->model->getConnection().$this->model->getTable())->delete()) {
                 ++$count;
             }
         }
