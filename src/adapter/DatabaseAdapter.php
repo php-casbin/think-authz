@@ -47,7 +47,11 @@ class DatabaseAdapter implements Adapter
         foreach ($rule as $key => $value) {
             $col['v'.strval($key).''] = $value;
         }
-        $this->model->cache($this->model->getConnection().$this->model->getTable())->save($col);
+        if(true === $this->model->cacheEnabled){
+            $this->model->cacheKey = $this->model->cacheMultiTenant ? $this->model->getConnection().$this->model->getTable() : $this->model->cacheKey;
+            $this->model = $this->model->cache($this->model->cacheKey,$this->model->cacheExpire);
+        }
+        $this->model->save($col);
     }
 
     /**
@@ -57,7 +61,11 @@ class DatabaseAdapter implements Adapter
      */
     public function loadPolicy(Model $model): void
     {
-        $rows = $this->model->cache($this->model->getConnection().$this->model->getTable())->select()->toArray();
+        if($this->model->cacheEnabled){
+            $this->model->cacheKey = $this->model->cacheMultiTenant ? $this->model->getConnection().$this->model->getTable() : $this->model->cacheKey;
+            $this->model = $this->model->cache($this->model->cacheKey,$this->model->cacheExpire);
+        }
+        $rows = $this->model->select()->toArray();
         foreach ($rows as $row) {
             $line = implode(', ', array_filter(array_slice($row, 1), function ($val) {
                 return '' != $val && !is_null($val);
@@ -116,8 +124,11 @@ class DatabaseAdapter implements Adapter
             $instance->where('v'.strval($key), $value);
         }
 
+        if($this->model->cacheEnabled){
+            $this->model->cacheKey = $this->model->cacheMultiTenant ? $this->model->getConnection().$this->model->getTable() : $this->model->cacheKey;
+        }
         foreach ($instance->select() as $model) {
-            if ($model->cache($this->model->getConnection().$this->model->getTable())->delete()) {
+            if ($model->cache($this->model->cacheKey)->delete()) {
                 ++$count;
             }
         }
@@ -135,7 +146,9 @@ class DatabaseAdapter implements Adapter
     public function removeFilteredPolicy(string $sec, string $ptype, int $fieldIndex, string ...$fieldValues): void
     {
         $count = 0;
-
+        if($this->model->cacheEnabled){
+            $this->model->cacheKey = $this->model->cacheMultiTenant ? $this->model->getConnection().$this->model->getTable() : $this->model->cacheKey;
+        }
         $instance = $this->model->where('ptype', $ptype);
         foreach (range(0, 5) as $value) {
             if ($fieldIndex <= $value && $value < $fieldIndex + count($fieldValues)) {
@@ -146,7 +159,7 @@ class DatabaseAdapter implements Adapter
         }
 
         foreach ($instance->select() as $model) {
-            if ($model->cache($this->model->getConnection().$this->model->getTable())->delete()) {
+            if ($model->cache($this->model->cacheKey)->delete()) {
                 ++$count;
             }
         }
