@@ -31,6 +31,9 @@ class DatabaseAdapter implements Adapter
     public function __construct(Rule $model)
     {
         $this->model = $model;
+        if($this->model->cacheEnabled){
+            $this->model->cacheKey = $this->model->cacheMultiTenant ? $this->model->getConnection().$this->model->getTable() : $this->model->cacheKey;
+        }
     }
 
     /**
@@ -47,7 +50,10 @@ class DatabaseAdapter implements Adapter
         foreach ($rule as $key => $value) {
             $col['v'.strval($key).''] = $value;
         }
-        $this->model->cache('tauthz')->save($col);
+        if($this->model->cacheEnabled){
+            $this->model = $this->model->cache($this->model->cacheKey,$this->model->cacheExpire);
+        }
+        $this->model->save($col);
     }
 
     /**
@@ -57,7 +63,10 @@ class DatabaseAdapter implements Adapter
      */
     public function loadPolicy(Model $model): void
     {
-        $rows = $this->model->cache('tauthz')->select()->toArray();
+        if($this->model->cacheEnabled){
+            $this->model = $this->model->cache($this->model->cacheKey,$this->model->cacheExpire);
+        }
+        $rows = $this->model->select()->toArray();
         foreach ($rows as $row) {
             $line = implode(', ', array_filter(array_slice($row, 1), function ($val) {
                 return '' != $val && !is_null($val);
@@ -116,9 +125,17 @@ class DatabaseAdapter implements Adapter
             $instance->where('v'.strval($key), $value);
         }
 
-        foreach ($instance->select() as $model) {
-            if ($model->cache('tauthz')->delete()) {
-                ++$count;
+        if($this->model->cacheEnabled){
+            foreach ($instance->select() as $model) {
+                if ($model->cache($this->model->cacheKey)->delete()) {
+                    ++$count;
+                }
+            }
+        }else{
+            foreach ($instance->select() as $model) {
+                if ($model->delete()) {
+                    ++$count;
+                }
             }
         }
     }
@@ -144,10 +161,17 @@ class DatabaseAdapter implements Adapter
                 }
             }
         }
-
-        foreach ($instance->select() as $model) {
-            if ($model->cache('tauthz')->delete()) {
-                ++$count;
+        if($this->model->cacheEnabled){
+            foreach ($instance->select() as $model) {
+                if ($model->cache($this->model->cacheKey)->delete()) {
+                    ++$count;
+                }
+            }
+        }else{
+            foreach ($instance->select() as $model) {
+                if ($model->delete()) {
+                    ++$count;
+                }
             }
         }
     }
