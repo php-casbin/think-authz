@@ -6,13 +6,15 @@ use tauthz\model\Rule;
 use Casbin\Model\Model;
 use Casbin\Persist\Adapter;
 use Casbin\Persist\AdapterHelper;
+use Casbin\Persist\UpdatableAdapter;
+use think\facade\Db;
 
 /**
  * DatabaseAdapter.
  *
  * @author techlee@qq.com
  */
-class DatabaseAdapter implements Adapter
+class DatabaseAdapter implements Adapter, UpdatableAdapter
 {
     use AdapterHelper;
 
@@ -150,5 +152,48 @@ class DatabaseAdapter implements Adapter
                 ++$count;
             }
         }
+    }
+
+    /**
+     * Updates a policy rule from storage.
+     * This is part of the Auto-Save feature.
+     *
+     * @param string $sec
+     * @param string $ptype
+     * @param string[] $oldRule
+     * @param string[] $newPolicy
+     */
+    public function updatePolicy(string $sec, string $ptype, array $oldRule, array $newPolicy): void
+    {
+        $instance = $this->model->where('ptype', $ptype);
+        foreach ($oldRule as $key => $value) {
+            $instance->where('v' . strval($key), $value);
+        }
+        $instance = $instance->find();
+
+        foreach ($newPolicy as $key => $value) {
+            $column = 'v' . strval($key);
+            $instance->$column = $value;
+        }
+
+        $instance->save();
+    }
+
+    /**
+     * UpdatePolicies updates some policy rules to storage, like db, redis.
+     *
+     * @param string $sec
+     * @param string $ptype
+     * @param string[][] $oldRules
+     * @param string[][] $newRules
+     * @return void
+     */
+    public function updatePolicies(string $sec, string $ptype, array $oldRules, array $newRules): void
+    {
+        Db::transaction(function () use ($sec, $ptype, $oldRules, $newRules) {
+            foreach ($oldRules as $i => $oldRule) {
+                $this->updatePolicy($sec, $ptype, $oldRule, $newRules[$i]);
+            }
+        });
     }
 }

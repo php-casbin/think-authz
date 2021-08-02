@@ -76,4 +76,63 @@ class DatabaseAdapterTest extends TestCase
             $this->assertFalse(Enforcer::enforce('alice', 'data2', 'write'));
         });
     }
+
+    public function testUpdatePolicy()
+    {
+        $this->testing(function () {
+            $this->assertEquals([
+                ['alice', 'data1', 'read'],
+                ['bob', 'data2', 'write'],
+                ['data2_admin', 'data2', 'read'],
+                ['data2_admin', 'data2', 'write'],
+            ], Enforcer::getPolicy());
+    
+            Enforcer::updatePolicy(
+                ['alice', 'data1', 'read'],
+                ['alice', 'data1', 'write']
+            );
+    
+            Enforcer::updatePolicy(
+                ['bob', 'data2', 'write'],
+                ['bob', 'data2', 'read']
+            );
+    
+            $this->assertEquals([
+                ['alice', 'data1', 'write'],
+                ['bob', 'data2', 'read'],
+                ['data2_admin', 'data2', 'read'],
+                ['data2_admin', 'data2', 'write'],
+            ], Enforcer::getPolicy());
+        });
+    }
+
+    public function testUpdatePolicies()
+    {
+        $this->testing(function () {
+            $this->assertEquals([
+                ['alice', 'data1', 'read'],
+                ['bob', 'data2', 'write'],
+                ['data2_admin', 'data2', 'read'],
+                ['data2_admin', 'data2', 'write'],
+            ], Enforcer::getPolicy());
+    
+            $oldPolicies = [
+                ['alice', 'data1', 'read'],
+                ['bob', 'data2', 'write']
+            ];
+            $newPolicies = [
+                ['alice', 'data1', 'write'],
+                ['bob', 'data2', 'read']
+            ];
+    
+            Enforcer::updatePolicies($oldPolicies, $newPolicies);
+    
+            $this->assertEquals([
+                ['alice', 'data1', 'write'],
+                ['bob', 'data2', 'read'],
+                ['data2_admin', 'data2', 'read'],
+                ['data2_admin', 'data2', 'write'],
+            ], Enforcer::getPolicy());
+        });
+    }
 }
