@@ -7,6 +7,7 @@ use Casbin\Model\Model;
 use Casbin\Persist\Adapter;
 use Casbin\Persist\AdapterHelper;
 use Casbin\Persist\UpdatableAdapter;
+use Casbin\Persist\BatchAdapter;
 use think\facade\Db;
 
 /**
@@ -14,7 +15,7 @@ use think\facade\Db;
  *
  * @author techlee@qq.com
  */
-class DatabaseAdapter implements Adapter, UpdatableAdapter
+class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter
 {
     use AdapterHelper;
 
@@ -102,6 +103,30 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter
     }
 
     /**
+     * Adds a policy rules to the storage.
+     * This is part of the Auto-Save feature.
+     *
+     * @param string $sec
+     * @param string $ptype
+     * @param string[][] $rules
+     */
+    public function addPolicies(string $sec, string $ptype, array $rules): void
+    {
+        $cols = [];
+        $i = 0;
+
+        foreach ($rules as $rule) {
+            $temp['ptype'] = $ptype;
+            foreach ($rule as $key => $value) {
+                $temp['v' . strval($key)] = $value;
+            }
+            $cols[$i++] = $temp;
+            $temp = [];
+        }
+        $this->model->cache('tauthz')->insertAll($cols);
+    }
+
+    /**
      * This is part of the Auto-Save feature.
      *
      * @param string $sec
@@ -123,6 +148,23 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter
                 ++$count;
             }
         }
+    }
+
+    /**
+     * Removes policy rules from the storage.
+     * This is part of the Auto-Save feature.
+     *
+     * @param string $sec
+     * @param string $ptype
+     * @param string[][] $rules
+     */
+    public function removePolicies(string $sec, string $ptype, array $rules): void
+    {
+        Db::transaction(function () use ($sec, $ptype, $rules) {
+            foreach ($rules as $rule) {
+                $this->removePolicy($sec, $ptype, $rule);
+            }
+        });
     }
 
     /**
