@@ -8,6 +8,9 @@ use Casbin\Persist\Adapter;
 use Casbin\Persist\AdapterHelper;
 use Casbin\Persist\UpdatableAdapter;
 use Casbin\Persist\BatchAdapter;
+use Casbin\Persist\FilteredAdapter;
+use Casbin\Persist\Adapters\Filter;
+use Casbin\Exceptions\InvalidFilterTypeException;
 use think\facade\Db;
 
 /**
@@ -15,9 +18,14 @@ use think\facade\Db;
  *
  * @author techlee@qq.com
  */
-class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter
+class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, FilteredAdapter
 {
     use AdapterHelper;
+
+    /**
+     * @var bool
+     */
+    private $filtered = false;
 
     /**
      * Rules model.
@@ -237,5 +245,60 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter
                 $this->updatePolicy($sec, $ptype, $oldRule, $newRules[$i]);
             }
         });
+    }
+
+    /**
+     * Returns true if the loaded policy has been filtered.
+     *
+     * @return bool
+     */
+    public function isFiltered(): bool
+    {
+        return $this->filtered;
+    }
+
+    /**
+     * Sets filtered parameter.
+     *
+     * @param bool $filtered
+     */
+    public function setFiltered(bool $filtered): void
+    {
+        $this->filtered = $filtered;
+    }
+
+    /**
+     * Loads only policy rules that match the filter.
+     *
+     * @param Model $model
+     * @param mixed $filter
+     */
+    public function loadFilteredPolicy(Model $model, $filter): void
+    {
+        $instance = $this->model;
+
+        if (is_string($filter)) {
+            $instance = $instance->whereRaw($filter);
+        } elseif ($filter instanceof Filter) {
+            foreach ($filter->p as $k => $v) {
+                $where[$v] = $filter->g[$k];
+                $instance = $instance->where($v, $filter->g[$k]);
+            }
+        } elseif ($filter instanceof \Closure) {
+            $instance = $instance->where($filter);
+        } else {
+            throw new InvalidFilterTypeException('invalid filter type');
+        }
+        $rows = $instance->select()->hidden(['id'])->toArray();
+        foreach ($rows as $row) {
+            $row = array_filter($row, function ($value) {
+                return !is_null($value) && $value !== '';
+            });
+            $line = implode(', ', array_filter($row, function ($val) {
+                return '' != $val && !is_null($val);
+            }));
+            $this->loadPolicyLine(trim($line), $model);
+        }
+        $this->setFiltered(true);
     }
 }
