@@ -248,6 +248,55 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
     }
 
     /**
+     * UpdateFilteredPolicies deletes old rules and adds new rules.
+     *
+     * @param string $sec
+     * @param string $ptype
+     * @param array $newPolicies
+     * @param integer $fieldIndex
+     * @param string ...$fieldValues
+     * @return array
+     */
+    public function updateFilteredPolicies(string $sec, string $ptype, array $newPolicies, int $fieldIndex, string ...$fieldValues): array
+    {
+        $where['ptype'] = $ptype;
+        foreach ($fieldValues as $fieldValue) {
+            $suffix = $fieldIndex++;
+            if (!is_null($fieldValue) && $fieldValue !== '') {
+                $where['v'. $suffix] = $fieldValue;
+            }
+        }
+
+        $newP = [];
+        $oldP = [];
+        foreach ($newPolicies as $newRule) {
+            $col['ptype'] = $ptype;
+            foreach ($newRule as $key => $value) {
+                $col['v' . strval($key)] = $value;
+            }
+            $newP[] = $col;
+        }
+
+        DB::transaction(function () use ($newP, $where, &$oldP) {
+            $oldRules = $this->model->where($where);
+            $oldP = $oldRules->select()->hidden(['id'])->toArray();
+
+            foreach ($oldP as &$item) {
+                $item = array_filter($item, function ($value) {
+                    return !is_null($value) && $value !== '';
+                });
+                unset($item['ptype']);
+            }
+            
+            $oldRules->delete();
+            $this->model->insertAll($newP);
+        });
+
+        // return deleted rules
+        return $oldP;
+    }
+
+    /**
      * Returns true if the loaded policy has been filtered.
      *
      * @return bool
