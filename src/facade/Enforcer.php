@@ -28,6 +28,7 @@ use think\Facade;
  * @method static bool hasPermissionForUser(string $username, string ...$permission) 确定用户是否具有权限
  * @method static array getImplicitRolesForUser(string $username, string ...$domain) 获取用户具有的隐式角色
  * @method static array getImplicitPermissionsForUser(string $username, string ...$domain) 获取用户具有的隐式权限
+ * @method static addFunction(string $name, \Closure $func) 添加一个自定义函数
  */
 class Enforcer extends Facade
 {
