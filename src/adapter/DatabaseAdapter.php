@@ -58,7 +58,7 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
         foreach ($rule as $key => $value) {
             $col['v'.strval($key).''] = $value;
         }
-        $this->model->cache('tauthz')->save($col);
+        $this->model->cache('tauthz')->insert($col);
     }
 
     /**
