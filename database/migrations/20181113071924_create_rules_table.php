@@ -29,7 +29,7 @@ class CreateRulesTable extends Migrator
      */
     protected function getDbConfig(): array
     {
-        $default = config('tauthz.database.connection') ?: config('database.default');
+        $default = config('tauthz.enforcers.basic.database.connection') ?: config('database.default');
 
         $config = config("database.connections.{$default}");
 
