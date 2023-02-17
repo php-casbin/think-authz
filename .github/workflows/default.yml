@@ -23,14 +23,14 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [ 7.1, 7.2, 7.3, 7.4 ]
+        php: [ 7.1, 7.2, 7.3, 7.4, 8.0, 8.1 ]
         stability: [ prefer-lowest ]
 
     name: PHP ${{ matrix.php }} - ${{ matrix.stability }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -44,7 +44,7 @@ jobs:
 
       - name: Cache Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: vendor
           key: ${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
@@ -62,8 +62,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ test ]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
 
