@@ -1,9 +1,9 @@
 <h1 align="center">
-    ThinkPHP 6.0 Authorization
+    ThinkPHP Authorization
 </h1>
 
 <p align="center">
-	<strong>Think-authz 是一个专为 ThinkPHP6.0 打造的授权（角色和权限控制）工具</strong>    
+	<strong>Think-authz 是一个专为 ThinkPHP 打造的授权（角色和权限控制）工具</strong>    
 </p>
 
 <p align="center">
