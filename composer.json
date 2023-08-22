@@ -21,14 +21,14 @@
     "license": "Apache-2.0",
     "require": {
         "casbin/casbin": "~3.0",
-        "topthink/framework": "^6.0.0",
-        "topthink/think-migration": "^3.0",
+        "topthink/framework": "~6.0|~8.0",
+        "topthink/think-migration": "^3.0.6",
         "casbin/psr3-bridge": "^1.1"
     },
     "require-dev": {
         "phpunit/phpunit": "~7.0|~8.0|~9.0",
-        "php-coveralls/php-coveralls": "^2.1",
-        "topthink/think": "^6.0.0"
+        "php-coveralls/php-coveralls": "^2.4",
+        "topthink/think": "~6.0|~8.0"
     },
     "autoload": {
         "psr-4": {
