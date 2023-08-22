@@ -7,9 +7,9 @@
 </p>
 
 <p align="center">
-	<a href="https://travis-ci.org/php-casbin/think-authz">
-		<img src="https://travis-ci.org/php-casbin/think-authz.svg?branch=master" alt="Build Status">
-  	</a>
+    <a href="https://github.com/php-casbin/think-authz/actions">
+        <img src="https://github.com/php-casbin/think-authz/workflows/Default/badge.svg?branch=master" alt="Build Status">
+    </a>
 	<a href="https://coveralls.io/github/php-casbin/think-authz">
 		<img src="https://coveralls.io/repos/github/php-casbin/think-authz/badge.svg" alt="Coverage Status">
   	</a>
