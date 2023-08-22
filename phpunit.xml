@@ -23,7 +23,8 @@
         <log type="coverage-html" target="build/html"/>
     </logging>
     <php>
-        <env name="PHP_APP_DEBUG " value="true"/>
+        <env name="PHP_APP_DEBUG" value="true"/>
         <env name="PHP_DATABASE_DATABASE" value="tauthz"/>
+        <env name="PHP_DB_NAME" value="tauthz"/>
     </php>
 </phpunit>
