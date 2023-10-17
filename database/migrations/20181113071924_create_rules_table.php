@@ -1,6 +1,7 @@
 <?php
 
 use think\migration\Migrator;
+use Phinx\Config\Config;
 use Phinx\Db\Adapter\AdapterFactory;
 
 class CreateRulesTable extends Migrator
@@ -10,17 +11,19 @@ class CreateRulesTable extends Migrator
      *
      * @return void
      */
-    protected function init()
+    public function init()
     {
         $options = $this->getDbConfig();
-    
+
         $adapter = AdapterFactory::instance()->getAdapter($options['adapter'], $options);
-    
+
         if ($adapter->hasOption('table_prefix') || $adapter->hasOption('table_suffix')) {
             $adapter = AdapterFactory::instance()->getWrapper('prefix', $adapter);
         }
     
-        $this->setAdapter( $adapter);    
+        $adapter->connect();
+
+        $this->setAdapter($adapter);    
     }
     
     /**
@@ -43,6 +46,7 @@ class CreateRulesTable extends Migrator
                 'pass'         => $config['password'],
                 'port'         => $config['hostport'],
                 'charset'      => $config['charset'],
+                'suffix'       => $config['suffix'] ?? '',
                 'table_prefix' => $config['prefix'],
             ];
         } else {
@@ -54,13 +58,15 @@ class CreateRulesTable extends Migrator
                 'pass'         => explode(',', $config['password'])[0],
                 'port'         => explode(',', $config['hostport'])[0],
                 'charset'      => explode(',', $config['charset'])[0],
+                'suffix'       => explode(',', $config['suffix'] ?? '')[0],
                 'table_prefix' => explode(',', $config['prefix'])[0],
             ];
         }
 
         $table = config('database.migration_table', 'migrations');
 
-        $dbConfig['default_migration_table'] = $dbConfig['table_prefix'] . $table;
+        $dbConfig['migration_table'] = $dbConfig['table_prefix'] . $table;
+        $dbConfig['version_order']   = Config::VERSION_ORDER_CREATION_TIME;
 
         return $dbConfig;
     }
@@ -104,6 +110,6 @@ class CreateRulesTable extends Migrator
     {
         $default = config('tauthz.default');
         $table = $this->table(config('tauthz.enforcers.'.$default.'.database.rules_name'));
-        $table->drop();
+        $table->drop()->save();
     }
 }
