@@ -21,8 +21,6 @@ jobs:
       matrix:
         include:
           # ThinkPHP 6.*
-          - php: 7.1
-            thinkphp: 6.*
           - php: 7.2
             thinkphp: 6.*
           - php: 7.4
@@ -36,6 +34,8 @@ jobs:
           - php: 8.0
             thinkphp: 8.*
           - php: 8.1
+            thinkphp: 8.*
+          - php: 8.2
             thinkphp: 8.*
 
     name: ThinkPHP${{ matrix.thinkphp }}-PHP${{ matrix.php }}
