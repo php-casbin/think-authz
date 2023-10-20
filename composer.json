@@ -21,7 +21,7 @@
     "license": "Apache-2.0",
     "require": {
         "casbin/casbin": "~3.0",
-        "topthink/framework": "~6.0|~8.0",
+        "topthink/framework": "~6.0|^8.0.3",
         "topthink/think-migration": "^3.1.0",
         "casbin/psr3-bridge": "^1.1"
     },
