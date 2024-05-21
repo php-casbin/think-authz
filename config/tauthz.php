@@ -39,6 +39,18 @@ return [
                 // 策略表完整名称.
                 'rules_table' => null,
             ],
+
+            /** 缓存配置 */
+            'cache' => [
+                // is enabled
+                'enabled' => false,
+                //  Multi-tenant
+                'multi_tenant' => false,
+                // cache Key
+                'key' => 'casbin_rule',
+                // 缓存有效期 0表示永久缓存
+                'expire' => 0,
+            ],
         ],
     ],
 ];

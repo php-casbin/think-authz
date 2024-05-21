@@ -11,7 +11,11 @@ use Casbin\Persist\BatchAdapter;
 use Casbin\Persist\FilteredAdapter;
 use Casbin\Persist\Adapters\Filter;
 use Casbin\Exceptions\InvalidFilterTypeException;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use think\facade\Db;
+use Throwable;
 
 /**
  * DatabaseAdapter.
@@ -78,17 +82,28 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
         foreach ($rule as $key => $value) {
             $col['v'.strval($key).''] = $value;
         }
-        $this->model->cache('tauthz')->insert($col);
+        if($this->model->cacheEnabled){
+            $_cacheKey = $this->model->getConnection().':'.$this->model->cacheKey;
+            $this->model = $this->model->cache($_cacheKey,$this->model->cacheExpire);
+        }
+        $this->model->insert($col);
     }
 
     /**
      * loads all policy rules from the storage.
      *
      * @param Model $model
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function loadPolicy(Model $model): void
     {
-        $rows = $this->model->cache('tauthz')->field(['ptype', 'v0', 'v1', 'v2', 'v3', 'v4', 'v5'])->select()->toArray();
+        if($this->model->cacheEnabled){
+            $_cacheKey = $this->model->getConnection().':'.$this->model->cacheKey;
+            $this->model = $this->model->cache($_cacheKey,$this->model->cacheExpire);
+        }
+        $rows = $this->model->field(['ptype', 'v0', 'v1', 'v2', 'v3', 'v4', 'v5'])->select()->toArray();
         foreach ($rows as $row) {
             $this->loadPolicyArray($this->filterRule($row), $model);
         }
@@ -148,7 +163,11 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
             $cols[$i++] = $temp;
             $temp = [];
         }
-        $this->model->cache('tauthz')->insertAll($cols);
+        if($this->model->cacheEnabled){
+            $_cacheKey = $this->model->getConnection().':'.$this->model->cacheKey;
+            $this->model = $this->model->cache($_cacheKey,$this->model->cacheExpire);
+        }
+        $this->model->insertAll($cols);
     }
 
     /**
@@ -156,12 +175,18 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
      *
      * @param string $sec
      * @param string $ptype
-     * @param array  $rule
+     * @param array $rule
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function removePolicy(string $sec, string $ptype, array $rule): void
     {
         $count = 0;
-
+        $_cacheKey = '';
+        if($this->model->cacheEnabled){
+            $_cacheKey = $this->model->getConnection().':'.$this->model->cacheKey;
+        }
         $instance = $this->model->where('ptype', $ptype);
 
         foreach ($rule as $key => $value) {
@@ -169,7 +194,7 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
         }
 
         foreach ($instance->select() as $model) {
-            if ($model->cache('tauthz')->delete()) {
+            if ($model->cache($_cacheKey)->delete()) {
                 ++$count;
             }
         }
@@ -204,7 +229,6 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
     {
         $count = 0;
         $removedRules = [];
-
         $instance = $this->model->where('ptype', $ptype);
         foreach (range(0, 5) as $value) {
             if ($fieldIndex <= $value && $value < $fieldIndex + count($fieldValues)) {
@@ -213,12 +237,15 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
                 }
             }
         }
-
+        $_cacheKey = '';
+        if($this->model->cacheEnabled){
+            $_cacheKey = $this->model->getConnection().':'.$this->model->cacheKey;
+        }
         foreach ($instance->select() as $model) {
             $item = $model->hidden(['id', 'ptype'])->toArray();
             $item = $this->filterRule($item);
             $removedRules[] = $item;
-            if ($model->cache('tauthz')->delete()) {
+            if ($model->cache($_cacheKey)->delete()) {
                 ++$count;
             }
         }
@@ -230,10 +257,11 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
      * RemoveFilteredPolicy removes policy rules that match the filter from the storage.
      * This is part of the Auto-Save feature.
      *
-     * @param string      $sec
-     * @param string      $ptype
-     * @param int         $fieldIndex
+     * @param string $sec
+     * @param string $ptype
+     * @param int $fieldIndex
      * @param string|null ...$fieldValues
+     * @throws Throwable
      */
     public function removeFilteredPolicy(string $sec, string $ptype, int $fieldIndex, ?string ...$fieldValues): void
     {
@@ -248,6 +276,9 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
      * @param string $ptype
      * @param string[] $oldRule
      * @param string[] $newPolicy
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function updatePolicy(string $sec, string $ptype, array $oldRule, array $newPolicy): void
     {
@@ -329,6 +360,10 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
      *
      * @param Model $model
      * @param mixed $filter
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws InvalidFilterTypeException
+     * @throws ModelNotFoundException
      */
     public function loadFilteredPolicy(Model $model, $filter): void
     {
