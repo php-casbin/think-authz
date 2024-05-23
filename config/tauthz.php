@@ -39,6 +39,21 @@ return [
                 // 策略表完整名称.
                 'rules_table' => null,
             ],
+
+            /** 缓存配置 */
+            'cache' => [
+                // changes whether Lauthz will cache the rules.
+                'enabled' => false,
+
+                // cache store
+                'store' => 'default',
+
+                // cache Key
+                'key' => 'rules',
+
+                // 缓存有效期 0表示永久缓存
+                'expire' => 0,
+            ],
         ],
     ],
 ];
