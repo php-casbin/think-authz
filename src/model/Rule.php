@@ -26,26 +26,14 @@ class Rule extends Model implements Arrayable
         'v5' => 'string',
     ];
 
-    /** 数据库连接 @var string */
-    public $connection;
-
-    /** rules_table @var string */
-    public $table;
-
-    /** rules_name @var string */
-    public $name;
-
     /** 缓存是否开启 @var string */
-    public $cacheEnabled;
-
-    /** 缓存是否是多租户 @var bool */
-    public $cacheMultiTenant;
+    protected $cacheEnabled;
 
     /** 设置缓存key @var string */
-    public $cacheKey;
+    protected $cacheKey;
 
     /** 设置缓存key过期时间 @var int */
-    public $cacheExpire;
+    protected $cacheExpire;
 
     /**
      * 架构函数
@@ -58,7 +46,6 @@ class Rule extends Model implements Arrayable
         $this->name = $this->config('database.rules_name');
 
         $this->cacheEnabled = $this->config('cache.enabled', false);
-        $this->cacheMultiTenant = $this->config('cache.multi_tenant', false);
         $this->cacheKey = $this->config('cache.key');
         $this->cacheExpire = $this->config('cache.expire');
         parent::__construct($data);

@@ -42,12 +42,15 @@ return [
 
             /** 缓存配置 */
             'cache' => [
-                // is enabled
+                // changes whether Lauthz will cache the rules.
                 'enabled' => false,
-                //  Multi-tenant
-                'multi_tenant' => false,
+
+                // cache store
+                'store' => 'default',
+
                 // cache Key
-                'key' => 'casbin_rule',
+                'key' => 'rules',
+
                 // 缓存有效期 0表示永久缓存
                 'expire' => 0,
             ],
