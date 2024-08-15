@@ -209,13 +209,30 @@ Enforcer::hasPermissionForUser('eve', 'articles', 'read');  // true or false
 
 ### 使用中间件
 
-
 该扩展包带有一个 `\tauthz\middleware\Basic::class` 中间件:
 
 ```php
 Route::get('news/:id','News/Show')
 	->middleware(\tauthz\middleware\Basic::class, ['news', 'read']);
 ```
+
+### 缓存配置
+
+该扩展包通过配置 `config/tauthz.php` 中的 `cache` 选项来开启或关闭缓存，以及配置缓存标识和过期时间。
+
+通过继承 `tauthz\cache\CacheHandler` 可以实现自定义缓存策略。例如：
+
+```php
+class MyCacheHandler extends CacheHandler
+{
+    public function cachePolicies(Rule $model)
+    {
+        return $model->cacheAlways('my_cache_key', 3600);
+    }
+}
+```
+
+并在 `cache` 配置选项中的`handler`声明此类。
 
 ## 感谢
 

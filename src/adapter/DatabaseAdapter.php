@@ -3,6 +3,7 @@
 namespace tauthz\adapter;
 
 use tauthz\model\Rule;
+use tauthz\cache\CacheHandlerContract;
 use Casbin\Model\Model;
 use Casbin\Persist\Adapter;
 use Casbin\Persist\AdapterHelper;
@@ -11,6 +12,7 @@ use Casbin\Persist\BatchAdapter;
 use Casbin\Persist\FilteredAdapter;
 use Casbin\Persist\Adapters\Filter;
 use Casbin\Exceptions\InvalidFilterTypeException;
+use tauthz\traits\Configurable;
 use think\facade\Db;
 
 /**
@@ -20,7 +22,7 @@ use think\facade\Db;
  */
 class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, FilteredAdapter
 {
-    use AdapterHelper;
+    use AdapterHelper, Configurable;
 
     /**
      * @var bool
@@ -35,6 +37,13 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
     protected $model;
 
     /**
+     * Cache Handler.
+     * 
+     * @var CacheHandlerContract
+     */
+    protected $cacheHandler;
+
+    /**
      * the DatabaseAdapter constructor.
      *
      * @param Rule $model
@@ -42,6 +51,9 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
     public function __construct(Rule $model)
     {
         $this->model = $model;
+
+        $cacheHandlerClass = $this->config('cache.handler', \tauthz\cache\CacheHandler::class);
+        $this->cacheHandler = new $cacheHandlerClass();
     }
 
     /**
@@ -78,7 +90,7 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
         foreach ($rule as $key => $value) {
             $col['v'.strval($key).''] = $value;
         }
-        $this->model->cache('tauthz')->insert($col);
+        $this->cacheHandler->cachePolicies($this->model)->insert($col);
     }
 
     /**
@@ -88,7 +100,7 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
      */
     public function loadPolicy(Model $model): void
     {
-        $rows = $this->model->cache('tauthz')->field(['ptype', 'v0', 'v1', 'v2', 'v3', 'v4', 'v5'])->select()->toArray();
+        $rows = $this->cacheHandler->cachePolicies($this->model)->field(['ptype', 'v0', 'v1', 'v2', 'v3', 'v4', 'v5'])->select()->toArray();
         foreach ($rows as $row) {
             $this->loadPolicyArray($this->filterRule($row), $model);
         }
@@ -148,7 +160,7 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
             $cols[$i++] = $temp;
             $temp = [];
         }
-        $this->model->cache('tauthz')->insertAll($cols);
+        $this->cacheHandler->cachePolicies($this->model)->insertAll($cols);
     }
 
     /**
@@ -169,7 +181,7 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
         }
 
         foreach ($instance->select() as $model) {
-            if ($model->cache('tauthz')->delete()) {
+            if ($this->cacheHandler->cachePolicies($model)->delete()) {
                 ++$count;
             }
         }
@@ -218,7 +230,7 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
             $item = $model->hidden(['id', 'ptype'])->toArray();
             $item = $this->filterRule($item);
             $removedRules[] = $item;
-            if ($model->cache('tauthz')->delete()) {
+            if ($this->cacheHandler->cachePolicies($model)->delete()) {
                 ++$count;
             }
         }

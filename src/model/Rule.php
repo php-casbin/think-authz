@@ -2,6 +2,7 @@
 
 namespace tauthz\model;
 
+use tauthz\traits\Configurable;
 use think\Model;
 use think\contract\Arrayable;
 
@@ -10,6 +11,7 @@ use think\contract\Arrayable;
  */
 class Rule extends Model implements Arrayable
 {
+    use Configurable;
     /**
      * 设置字段信息
      *
@@ -36,19 +38,5 @@ class Rule extends Model implements Arrayable
         $this->table = $this->config('database.rules_table');
         $this->name = $this->config('database.rules_name');
         parent::__construct($data);
-    }
-
-    /**
-     * Gets config value by key.
-     *
-     * @param string $key
-     * @param string $default
-     *
-     * @return mixed
-     */
-    protected function config(string $key = null, $default = null)
-    {
-        $driver = config('tauthz.default');
-        return config('tauthz.enforcers.'.$driver.'.'.$key, $default);
     }
 }

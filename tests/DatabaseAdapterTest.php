@@ -19,7 +19,6 @@ class DatabaseAdapterTest extends TestCase
 
             $this->assertTrue(Enforcer::enforce('alice', 'data2', 'read'));
             $this->assertTrue(Enforcer::enforce('alice', 'data2', 'write'));
-
         });
     }
 
@@ -85,12 +84,12 @@ class DatabaseAdapterTest extends TestCase
                 ['data2_admin', 'data2', 'read'],
                 ['data2_admin', 'data2', 'write'],
             ], Enforcer::getPolicy());
-    
+
             Enforcer::removePolicies([
                 ['data2_admin', 'data2', 'read'],
                 ['data2_admin', 'data2', 'write'],
             ]);
-    
+
             $this->assertEquals([
                 ['alice', 'data1', 'read'],
                 ['bob', 'data2', 'write']
@@ -126,17 +125,17 @@ class DatabaseAdapterTest extends TestCase
                 ['data2_admin', 'data2', 'read'],
                 ['data2_admin', 'data2', 'write'],
             ], Enforcer::getPolicy());
-    
+
             Enforcer::updatePolicy(
                 ['alice', 'data1', 'read'],
                 ['alice', 'data1', 'write']
             );
-    
+
             Enforcer::updatePolicy(
                 ['bob', 'data2', 'write'],
                 ['bob', 'data2', 'read']
             );
-    
+
             $this->assertEquals([
                 ['alice', 'data1', 'write'],
                 ['bob', 'data2', 'read'],
@@ -155,7 +154,7 @@ class DatabaseAdapterTest extends TestCase
                 ['data2_admin', 'data2', 'read'],
                 ['data2_admin', 'data2', 'write'],
             ], Enforcer::getPolicy());
-    
+
             $oldPolicies = [
                 ['alice', 'data1', 'read'],
                 ['bob', 'data2', 'write']
@@ -164,9 +163,9 @@ class DatabaseAdapterTest extends TestCase
                 ['alice', 'data1', 'write'],
                 ['bob', 'data2', 'read']
             ];
-    
+
             Enforcer::updatePolicies($oldPolicies, $newPolicies);
-    
+
             $this->assertEquals([
                 ['alice', 'data1', 'write'],
                 ['bob', 'data2', 'read'],
@@ -196,19 +195,19 @@ class DatabaseAdapterTest extends TestCase
                 ['data2_admin', 'data2', 'read'],
                 ['data2_admin', 'data2', 'write'],
             ], Enforcer::getPolicy());
-    
+
             Enforcer::updateFilteredPolicies([["alice", "data1", "write"]], 0, "alice", "data1", "read");
             Enforcer::updateFilteredPolicies([["bob", "data2", "read"]], 0, "bob", "data2", "write");
-    
+
             $policies = [
                 ['alice', 'data1', 'write'],
                 ['bob', 'data2', 'read'],
                 ['data2_admin', 'data2', 'read'],
                 ['data2_admin', 'data2', 'write']
             ];
-    
+
             $this->arrayEqualsWithoutOrder($policies, Enforcer::getPolicy());
-    
+
             // test use updateFilteredPolicies to update all policies of a user
             $this->initTable();
             Enforcer::loadPolicy();
@@ -217,7 +216,7 @@ class DatabaseAdapterTest extends TestCase
                 ['bob', 'data1', 'read']
             ];
             Enforcer::addPolicies($policies);
-    
+
             $this->arrayEqualsWithoutOrder([
                 ['alice', 'data1', 'read'],
                 ['bob', 'data2', 'write'],
@@ -226,10 +225,10 @@ class DatabaseAdapterTest extends TestCase
                 ['alice', 'data2', 'write'],
                 ['bob', 'data1', 'read']
             ], Enforcer::getPolicy());
-    
+
             Enforcer::updateFilteredPolicies([['alice', 'data1', 'write'], ['alice', 'data2', 'read']], 0, 'alice');
             Enforcer::updateFilteredPolicies([['bob', 'data1', 'write'], ["bob", "data2", "read"]], 0, 'bob');
-    
+
             $policies = [
                 ['alice', 'data1', 'write'],
                 ['alice', 'data2', 'read'],
@@ -238,9 +237,9 @@ class DatabaseAdapterTest extends TestCase
                 ['data2_admin', 'data2', 'read'],
                 ['data2_admin', 'data2', 'write']
             ];
-    
+
             $this->arrayEqualsWithoutOrder($policies, Enforcer::getPolicy());
-    
+
             // test if $fieldValues contains empty string
             $this->initTable();
             Enforcer::loadPolicy();
@@ -249,7 +248,7 @@ class DatabaseAdapterTest extends TestCase
                 ['bob', 'data1', 'read']
             ];
             Enforcer::addPolicies($policies);
-    
+
             $this->assertEquals([
                 ['alice', 'data1', 'read'],
                 ['bob', 'data2', 'write'],
@@ -258,10 +257,10 @@ class DatabaseAdapterTest extends TestCase
                 ['alice', 'data2', 'write'],
                 ['bob', 'data1', 'read']
             ], Enforcer::getPolicy());
-    
+
             Enforcer::updateFilteredPolicies([['alice', 'data1', 'write'], ['alice', 'data2', 'read']], 0, 'alice', '', '');
             Enforcer::updateFilteredPolicies([['bob', 'data1', 'write'], ["bob", "data2", "read"]], 0, 'bob', '', '');
-    
+
             $policies = [
                 ['alice', 'data1', 'write'],
                 ['alice', 'data2', 'read'],
@@ -270,9 +269,9 @@ class DatabaseAdapterTest extends TestCase
                 ['data2_admin', 'data2', 'read'],
                 ['data2_admin', 'data2', 'write']
             ];
-    
+
             $this->arrayEqualsWithoutOrder($policies, Enforcer::getPolicy());
-    
+
             // test if $fieldIndex is not zero
             $this->initTable();
             Enforcer::loadPolicy();
@@ -281,7 +280,7 @@ class DatabaseAdapterTest extends TestCase
                 ['bob', 'data1', 'read']
             ];
             Enforcer::addPolicies($policies);
-    
+
             $this->assertEquals([
                 ['alice', 'data1', 'read'],
                 ['bob', 'data2', 'write'],
@@ -290,17 +289,17 @@ class DatabaseAdapterTest extends TestCase
                 ['alice', 'data2', 'write'],
                 ['bob', 'data1', 'read']
             ], Enforcer::getPolicy());
-    
+
             Enforcer::updateFilteredPolicies([['alice', 'data1', 'edit'], ['bob', 'data1', 'edit']], 2, 'read');
             Enforcer::updateFilteredPolicies([['alice', 'data2', 'read'], ["bob", "data2", "read"]], 2, 'write');
-    
+
             $policies = [
                 ['alice', 'data1', 'edit'],
                 ['alice', 'data2', 'read'],
                 ['bob', 'data1', 'edit'],
                 ['bob', 'data2', 'read'],
             ];
-    
+
             $this->arrayEqualsWithoutOrder($policies, Enforcer::getPolicy());
         });
     }
@@ -330,7 +329,7 @@ class DatabaseAdapterTest extends TestCase
             $this->assertEquals([
                 ['bob', 'data2', 'write']
             ], Enforcer::getPolicy());
-            
+
             // Filter
             $filter = new Filter(['v2'], ['read']);
             Enforcer::loadFilteredPolicy($filter);
@@ -347,6 +346,31 @@ class DatabaseAdapterTest extends TestCase
             $this->assertEquals([
                 ['alice', 'data1', 'read'],
             ], Enforcer::getPolicy());
-            });
+        });
+    }
+
+    public function testCachePolicies()
+    {
+        $this->testing(function () {
+            $this->initTable();
+            Enforcer::loadPolicy();
+            // time cost if cache is enabled
+            $start = microtime(true);
+            Enforcer::loadPolicy();
+            $end = microtime(true);
+            $timeEnabled = $end - $start;
+            // time cost if cache is disabled
+            $driver = config('tauthz.default');
+            config(['enforcers' => [$driver => [
+                'cache' => ['enabled' => false],
+                'database' => ['rules_name' => 'rules']
+            ]]], 'tauthz');
+            $start = microtime(true);
+            Enforcer::loadPolicy();
+            $end = microtime(true);
+            $timeDisabled = $end - $start;
+            // ensure time cost is not greater than time cost if cache is disabled
+            $this->assertTrue($timeEnabled < $timeDisabled);
+        });
     }
 }
