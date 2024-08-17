@@ -39,6 +39,20 @@ return [
                 // 策略表完整名称.
                 'rules_table' => null,
             ],
+
+            /*
+            * 缓存设置.
+            */
+            'cache' => [
+                // 是否使用缓存
+                'enabled' => true,
+                // 缓存key
+                'key' => 'tauthz',
+                // 缓存有效期 0表示永久缓存
+                'expire' => 0,
+                // 缓存策略
+                'handler' => \tauthz\cache\CacheHandler::class
+            ]
         ],
     ],
 ];
