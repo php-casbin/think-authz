@@ -2,10 +2,10 @@
 
 namespace tauthz;
 
-use Casbin\Bridge\Logger\LoggerBridge;
 use Casbin\Enforcer;
 use Casbin\Model\Model;
 use Casbin\Log\Log;
+use Casbin\Log\Logger\DefaultLogger;
 use think\Service;
 use tauthz\command\Publish;
 
@@ -42,7 +42,15 @@ class TauthzService extends Service
                 $model->loadModel($config['model']['config_text']);
             }
 
-            return new Enforcer($model, app($adapter), $this->app->config->get('tauthz.log.enabled', false));
+            if ($logger = $this->app->config->get('tauthz.log.logger')) {
+                if (is_string($logger)) {
+                    $logger = new DefaultLogger($this->app->make($logger));
+                }
+
+                Log::setLogger($logger);
+            }
+
+            return new Enforcer($model, app($adapter), $logger, $this->app->config->get('tauthz.log.enabled', false));
         });
     }
 
@@ -54,15 +62,6 @@ class TauthzService extends Service
     public function boot()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/tauthz.php', 'tauthz');
-
-        // 设置 Casbin Logger
-        if ($logger = $this->app->config->get('tauthz.log.logger')) {
-            if (is_string($logger)) {
-                $logger = $this->app->make($logger);
-            }
-
-            Log::setLogger(new LoggerBridge($logger));
-        }
 
         $this->commands(['tauthz:publish' => Publish::class]);
     }

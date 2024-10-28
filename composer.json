@@ -20,15 +20,15 @@
     ],
     "license": "Apache-2.0",
     "require": {
-        "casbin/casbin": "~3.0",
-        "topthink/framework": "~6.0|^8.0.3",
-        "topthink/think-migration": "^3.1.0",
-        "casbin/psr3-bridge": "^1.1"
+        "php": ">=8.0",
+        "casbin/casbin": "~4.0",
+        "topthink/framework": "^8.0.3",
+        "topthink/think-migration": "^3.1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~7.0|~8.0|~9.0",
-        "php-coveralls/php-coveralls": "^2.4",
-        "topthink/think": "~6.0|~8.0"
+        "phpunit/phpunit": "~9.0",
+        "php-coveralls/php-coveralls": "^2.7",
+        "topthink/think": "~8.0"
     },
     "autoload": {
         "psr-4": {
