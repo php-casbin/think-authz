@@ -38,8 +38,6 @@
 
 ## 安装
 
-> 该扩展需要 PHP 7.1+ 和 ThinkPHP 6.x/8.x，针对 TP 5.1 请使用 [Think-Casbin](https://github.com/php-casbin/think-casbin) .
-
 使用`composer`安装：
 
 ```
