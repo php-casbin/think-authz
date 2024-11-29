@@ -21,7 +21,7 @@
     "license": "Apache-2.0",
     "require": {
         "php": ">=8.0",
-        "casbin/casbin": "~4.0",
+        "casbin/casbin": "~4.0.2",
         "topthink/framework": "^8.0.3",
         "topthink/think-migration": "^3.1.0"
     },

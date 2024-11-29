@@ -12,7 +12,7 @@ trait Configurable
      * 
      * @return mixed
      */
-    protected function config(string $key = null, $default = null)
+    protected function config(string $key, $default = null)
     {
         $driver = config('tauthz.default');
         return config('tauthz.enforcers.' . $driver . '.' . $key, $default);
