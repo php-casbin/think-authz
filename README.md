@@ -7,8 +7,8 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/php-casbin/think-authz/actions">
-        <img src="https://github.com/php-casbin/think-authz/workflows/Default/badge.svg?branch=master" alt="Build Status">
+    <a href="https://github.com/php-casbin/think-authz/actions/workflows/phpunit.yml">
+        <img src="https://github.com/php-casbin/think-authz/actions/workflows/phpunit.yml/badge.svg" alt="Build Status">
     </a>
 	<a href="https://coveralls.io/github/php-casbin/think-authz">
 		<img src="https://coveralls.io/repos/github/php-casbin/think-authz/badge.svg" alt="Coverage Status">

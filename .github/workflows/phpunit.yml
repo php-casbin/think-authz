@@ -1,4 +1,4 @@
-name: Default
+name: PHPUnit
 
 on: [push, pull_request]
 
