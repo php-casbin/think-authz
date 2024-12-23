@@ -2,9 +2,7 @@
 
 namespace tauthz\command;
 
-use think\console\Command;
-use think\console\Input;
-use think\console\Output;
+use think\console\{Command, Input, Output};
 
 /**
  * 发布配置文件、迁移文件指令

@@ -5,11 +5,7 @@ namespace tauthz\adapter;
 use tauthz\model\Rule;
 use tauthz\cache\CacheHandlerContract;
 use Casbin\Model\Model;
-use Casbin\Persist\Adapter;
-use Casbin\Persist\AdapterHelper;
-use Casbin\Persist\UpdatableAdapter;
-use Casbin\Persist\BatchAdapter;
-use Casbin\Persist\FilteredAdapter;
+use Casbin\Persist\{Adapter, AdapterHelper, UpdatableAdapter, BatchAdapter, FilteredAdapter};
 use Casbin\Persist\Adapters\Filter;
 use Casbin\Exceptions\InvalidFilterTypeException;
 use tauthz\traits\Configurable;
@@ -27,21 +23,21 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
     /**
      * @var bool
      */
-    private $filtered = false;
+    private bool $filtered = false;
 
     /**
      * Rules model.
      *
      * @var Rule
      */
-    protected $model;
+    protected Rule $model;
 
     /**
      * Cache Handler.
      * 
      * @var CacheHandlerContract
      */
-    protected $cacheHandler;
+    protected CacheHandlerContract $cacheHandler;
 
     /**
      * the DatabaseAdapter constructor.
@@ -84,12 +80,13 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
      *
      * @return void
      */
-    public function savePolicyLine($ptype, array $rule)
+    public function savePolicyLine(string $ptype, array $rule): void
     {
         $col['ptype'] = $ptype;
         foreach ($rule as $key => $value) {
-            $col['v'.strval($key).''] = $value;
+            $col['v' . strval($key) . ''] = $value;
         }
+
         $this->cacheHandler->cachePolicies($this->model)->insert($col);
     }
 
@@ -100,7 +97,8 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
      */
     public function loadPolicy(Model $model): void
     {
-        $rows = $this->cacheHandler->cachePolicies($this->model)->field(['ptype', 'v0', 'v1', 'v2', 'v3', 'v4', 'v5'])->select()->toArray();
+        $rows = $this->cacheHandler->cachePolicies($this->model)->field(['ptype', 'v0', 'v1', 'v2', 'v3', 'v4', 'v5'])
+            ->select()->toArray();
         foreach ($rows as $row) {
             $this->loadPolicyArray($this->filterRule($row), $model);
         }
@@ -160,6 +158,7 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
             $cols[$i++] = $temp;
             $temp = [];
         }
+
         $this->cacheHandler->cachePolicies($this->model)->insertAll($cols);
     }
 
@@ -177,7 +176,7 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
         $instance = $this->model->where('ptype', $ptype);
 
         foreach ($rule as $key => $value) {
-            $instance->where('v'.strval($key), $value);
+            $instance->where('v' . strval($key), $value);
         }
 
         foreach ($instance->select() as $model) {
@@ -234,7 +233,7 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
                 ++$count;
             }
         }
-        
+
         return $removedRules;
     }
 
@@ -271,7 +270,7 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
 
         foreach ($newPolicy as $key => $value) {
             $column = 'v' . strval($key);
-            $instance->$column = $value;
+            $instance->{$column} = $value;
         }
 
         $instance->save();
@@ -360,14 +359,12 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
         }
         $rows = $instance->select()->hidden(['id'])->toArray();
         foreach ($rows as $row) {
-            $row = array_filter($row, function ($value) {
-                return !is_null($value) && $value !== '';
-            });
-            $line = implode(', ', array_filter($row, function ($val) {
-                return '' != $val && !is_null($val);
-            }));
+            $row = array_filter($row, fn ($value) => !is_null($value) && $value !== '');
+            $line = implode(', ', array_filter($row, fn ($val) => '' != $val && !is_null($val)));
+
             $this->loadPolicyLine(trim($line), $model);
         }
+
         $this->setFiltered(true);
     }
 }

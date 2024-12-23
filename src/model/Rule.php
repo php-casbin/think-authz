@@ -29,10 +29,10 @@ class Rule extends Model implements Arrayable
     ];
     /**
      * 架构函数
-     * @access public
-     * @param array $data 数据
+     * 
+     * @param array|object $data 数据
      */
-    public function __construct($data = [])
+    public function __construct(array|object $data = [])
     {
         $this->connection = $this->config('database.connection') ?: '';
         $this->table = $this->config('database.rules_table');
