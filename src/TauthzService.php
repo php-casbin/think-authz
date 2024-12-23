@@ -12,7 +12,7 @@ use tauthz\command\Publish;
 /**
  * Tauthz service.
  *
- * @author techlee@qq.com
+ * @author leeqvip@gmail.com
  */
 class TauthzService extends Service
 {

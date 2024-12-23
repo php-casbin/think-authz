@@ -18,7 +18,7 @@ use think\facade\Db;
 /**
  * DatabaseAdapter.
  *
- * @author techlee@qq.com
+ * @author leeqvip@gmail.com
  */
 class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, FilteredAdapter
 {
