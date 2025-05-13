@@ -12,6 +12,18 @@ use think\contract\Arrayable;
 class Rule extends Model implements Arrayable
 {
     use Configurable;
+
+    protected $name;
+
+    // 设置当前模型对应的完整数据表名称
+    protected $table;
+
+    // 设置当前模型的数据库连接
+    protected $connection;
+
+    // 默认主键
+    protected $pk = 'id';
+
     /**
      * 设置字段信息
      *
@@ -37,6 +49,7 @@ class Rule extends Model implements Arrayable
         $this->connection = $this->config('database.connection') ?: '';
         $this->table = $this->config('database.rules_table');
         $this->name = $this->config('database.rules_name');
+
         parent::__construct($data);
     }
 }
