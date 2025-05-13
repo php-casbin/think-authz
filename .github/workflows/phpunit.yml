@@ -19,9 +19,10 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [ 8.0, 8.1, 8.2, 8.3, 8.4 ]
+        php: [ 8.0, 8.1, 8.2, 8.3 ]
+        thinkphp: [ "~8.0.3", "^8.1"]
 
-    name: PHP${{ matrix.php }}
+    name: ThinkPHP${{ matrix.thinkphp }}-PHP${{ matrix.php }}
 
     steps:
       - name: Checkout code
@@ -42,13 +43,15 @@ jobs:
         uses: actions/cache@v3
         with:
           path: vendor
-          key: ${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-${{ matrix.php }}-${{ matrix.thinkphp }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.php }}
+            ${{ runner.os }}-${{ matrix.php }}-${{ matrix.thinkphp }}
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: |
+          composer require topthink/framework:${{ matrix.thinkphp }} --no-update --no-interaction
+          composer install --prefer-dist --no-progress --no-suggest
 
       - name: Run test suite
         run: ./vendor/bin/phpunit
