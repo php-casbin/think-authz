@@ -7,5 +7,5 @@ use think\db\Query;
 
 interface CacheHandlerContract
 {
-    public function cachePolicies(Rule $model): Query;
+    public function cachePolicies(Rule $model): Query|Rule;
 }
