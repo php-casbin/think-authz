@@ -11,7 +11,7 @@
         "abac",
         "authz"
     ],
-    "description": "An authorization library that supports access control models like ACL, RBAC, ABAC in ThinkPHP 6. ",
+    "description": "An authorization library that supports access control models like ACL, RBAC, ABAC for ThinkPHP. ",
     "authors": [
         {
             "name": "TechLee",
