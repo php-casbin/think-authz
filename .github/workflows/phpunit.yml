@@ -53,6 +53,9 @@ jobs:
           composer require topthink/framework:${{ matrix.thinkphp }} --no-update --no-interaction
           composer install --prefer-dist --no-progress --no-suggest
 
+      - name: Run PHPStan
+        run: composer run phpstan -- --no-progress
+
       - name: Run test suite
         run: ./vendor/bin/phpunit
 
