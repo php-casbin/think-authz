@@ -3,6 +3,7 @@
 namespace tauthz\command;
 
 use think\console\{Command, Input, Output};
+use LogicException;
 
 /**
  * 发布配置文件、迁移文件指令
@@ -28,27 +29,28 @@ class Publish extends Command
     protected function execute(Input $input, Output $output)
     {
         $destination = $this->app->getRootPath() . '/database/migrations/';
-        if(!is_dir($destination)){
+        if (!is_dir($destination)) {
             mkdir($destination, 0755, true);
         }
-        $source = __DIR__.'/../../database/migrations/';
+        $source = __DIR__ . '/../../database/migrations/';
         $handle = dir($source);
-        
-        while($entry=$handle->read()) {   
-            if(($entry!=".")&&($entry!="..")){   
-                if(is_file($source.$entry)){
-                    copy($source.$entry, $destination.$entry);   
+
+        while ($entry = $handle->read()) {
+            if (($entry != ".") && ($entry != "..")) {
+                if (is_file($source . $entry)) {
+                    copy($source . $entry, $destination . $entry);
                 }
             }
         }
 
-        if (!file_exists(config_path().'tauthz-rbac-model.conf')) {
-            copy(__DIR__.'/../../config/tauthz-rbac-model.conf', config_path().'tauthz-rbac-model.conf');
+        if (!file_exists(config_path() . 'tauthz-rbac-model.conf')) {
+            copy(__DIR__ . '/../../config/tauthz-rbac-model.conf', config_path() . 'tauthz-rbac-model.conf');
         }
 
-        if (!file_exists(config_path().'tauthz.php')) {
-            copy(__DIR__.'/../../config/tauthz.php', config_path().'tauthz.php');
+        if (!file_exists(config_path() . 'tauthz.php')) {
+            copy(__DIR__ . '/../../config/tauthz.php', config_path() . 'tauthz.php');
         }
+
+        return 0;
     }
 }
-

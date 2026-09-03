@@ -8,7 +8,7 @@ trait Configurable
      * Gets config value by key.
      * 
      * @param string $key
-     * @param string $default
+     * @param mixed $default
      * 
      * @return mixed
      */

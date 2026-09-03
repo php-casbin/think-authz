@@ -10,6 +10,7 @@ use Casbin\Persist\Adapters\Filter;
 use Casbin\Exceptions\InvalidFilterTypeException;
 use tauthz\traits\Configurable;
 use think\facade\Db;
+use Throwable;
 
 /**
  * DatabaseAdapter.
@@ -64,7 +65,7 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
 
         $i = count($rule) - 1;
         for (; $i >= 0; $i--) {
-            if ($rule[$i] != '' && !is_null($rule[$i])) {
+            if ($rule[$i] != '') {
                 break;
             }
         }
@@ -359,8 +360,8 @@ class DatabaseAdapter implements Adapter, UpdatableAdapter, BatchAdapter, Filter
         }
         $rows = $instance->select()->hidden(['id'])->toArray();
         foreach ($rows as $row) {
-            $row = array_filter($row, fn ($value) => !is_null($value) && $value !== '');
-            $line = implode(', ', array_filter($row, fn ($val) => '' != $val && !is_null($val)));
+            $row = array_filter($row, fn($value) => $value !== '');
+            $line = implode(', ', array_filter($row, fn($val) => '' != $val));
 
             $this->loadPolicyLine(trim($line), $model);
         }
