@@ -28,7 +28,11 @@
     "require-dev": {
         "phpunit/phpunit": "~9.0",
         "php-coveralls/php-coveralls": "^2.7",
-        "topthink/think": "~8.0"
+        "topthink/think": "~8.0",
+        "phpstan/phpstan": "^2.0"
+    },
+    "scripts": {
+        "phpstan": "phpstan analyse"
     },
     "autoload": {
         "psr-4": {
