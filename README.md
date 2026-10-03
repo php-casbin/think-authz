@@ -203,7 +203,7 @@ Enforcer::getPermissionsForUser('eve'); // return array
 Enforcer::hasPermissionForUser('eve', 'articles', 'read');  // true or false
 ```
 
-更多 `API` 参考 [Casbin API](https://casbin.org/docs/en/management-api) 。
+更多 `API` 参考 [Casbin API](https://casbin.apache.org/docs/management-api/) 。
 
 ### 使用中间件
 
@@ -234,7 +234,7 @@ class MyCacheHandler extends CacheHandler
 
 ## 感谢
 
-[Casbin](https://github.com/php-casbin/php-casbin)，你可以查看全部文档在其 [官网](https://casbin.org/) 上。
+[Casbin](https://github.com/php-casbin/php-casbin)，你可以查看全部文档在其 [官网](https://casbin.apache.org/) 上。
 
 ## License
 
